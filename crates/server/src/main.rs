@@ -23,10 +23,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tokio::spawn(async move {
             let mut buf = [0; 1024]; // Buffer size should be configurable
 
-            match socket.read(&mut buf).await {
+            let n = match socket.read(&mut buf).await {
+                Ok(n) if n > 0 => n,
                 Ok(_) => {
-                    let request = String::from_utf8_lossy(&buf);
-                    let id: u64 = request.trim().parse().unwrap();
+                    eprintln!("failed to read from socket; err = zero bytes read");
+                    return;
+                }
+                Err(e) => {
+                    eprintln!("failed to read from socket; err = {:?}", e);
+                    return;
+                }
+            };
+    
+            let request = String::from_utf8_lossy(&buf[..n]);
+            print!("Request: {}", request);
+            match request.trim().parse::<u64>() {
+                Ok(id) => {
                     let mut rng_engine = rng_engine.lock().await;
                     let rng_result = rng_engine.generate(id);
                     let response = format!("Random number: {}\n", rng_result);
@@ -35,9 +47,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         eprintln!("failed to write to socket; err = {:?}", e);
                     }
                 }
-
                 Err(e) => {
-                    eprintln!("failed to read from socket; err = {:?}", e);
+                    eprintln!("failed to parse request; err = {:?}", e);
+                    let response = format!("Invalid request: {}\n", request);
+                    if let Err(e) = socket.write_all(response.as_bytes()).await {
+                        eprintln!("failed to write to socket; err = {:?}", e);
+                    }
                 }
             }
         });
