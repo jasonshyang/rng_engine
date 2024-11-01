@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO rng (roll_result) VALUES (?);",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "8f5fc6876a9e051c57e3bdfebe43efa2520c86f6c4c0ef20b9ced9c92e42f8fc"
+}
