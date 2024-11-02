@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub struct Calibration {
-    history: HashMap<u64, Vec<u32>>,
+    history: HashMap<i64, Vec<i64>>,
 }
 
 impl Calibration {
@@ -11,8 +11,8 @@ impl Calibration {
         }
     }
 
-    pub fn calibrate(&mut self, id: u64, base_rng_result: u32) -> u32 {
-        let rng_history = self.history.entry(id).or_insert(Vec::new()); // Get or insert history for ID
+    pub fn calibrate(&mut self, player_id: i64, base_rng_result: i64) -> i64 {
+        let rng_history = self.history.entry(player_id).or_insert(Vec::new()); // Get or insert history for ID
         
         // logics to calibrate the RNG result
         let calibrated_result = base_rng_result; // Placeholder for now

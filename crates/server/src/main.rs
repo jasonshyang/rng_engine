@@ -1,16 +1,29 @@
-use std::sync::Arc;
-use tokio::sync::Mutex;
-
+use std::{
+    env,
+    sync::Arc,
+};
 use tokio::{
     net::TcpListener,
     io::{AsyncReadExt, AsyncWriteExt},
+    sync::Mutex
 };
-
-use core::rng_engine::RngEngine;
+use core::{
+    db::Db,
+    rng_engine::RngEngine
+};
+use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let rng_engine = Arc::new(Mutex::new(RngEngine::new(42))); // Seed should be random in production
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    let db = Arc::new(Mutex::new(Db::new(&database_url).await?));
+    db.lock().await.init().await?;
+
+    let rng_engine = Arc::new(Mutex::new(RngEngine::new(42, db.clone()))); // Seed should be random in production
+
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 3000)); // Listen on localhost:3000, should be configurable
     let listener = TcpListener::bind(addr).await?;
 
@@ -37,14 +50,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
             let request = String::from_utf8_lossy(&buf[..n]);
             print!("Request: {}", request);
-            match request.trim().parse::<u64>() {
-                Ok(id) => {
+            match request.trim().parse::<i64>() {
+                Ok(player_id) => {
                     let mut rng_engine = rng_engine.lock().await;
-                    let rng_result = rng_engine.generate(id);
-                    let response = format!("Random number: {}\n", rng_result);
-
-                    if let Err(e) = socket.write_all(response.as_bytes()).await {
-                        eprintln!("failed to write to socket; err = {:?}", e);
+                    match rng_engine.generate(player_id).await {
+                        Ok(rng_result) => {
+                            let response = format!("{}\n", rng_result);
+                            if let Err(e) = socket.write_all(response.as_bytes()).await {
+                                eprintln!("failed to write to socket; err = {:?}", e);
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("failed to generate RNG result; err = {:?}", e);
+                            let response = "Failed to generate RNG result\n";
+                            if let Err(e) = socket.write_all(response.as_bytes()).await {
+                                eprintln!("failed to write to socket; err = {:?}", e);
+                            }
+                        }
                     }
                 }
                 Err(e) => {

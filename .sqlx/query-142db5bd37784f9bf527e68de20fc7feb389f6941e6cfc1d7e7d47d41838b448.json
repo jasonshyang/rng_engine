@@ -1,21 +1,26 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT * FROM rng WHERE id = ? ORDER BY created_at DESC LIMIT ?;",
+  "query": "SELECT * FROM rng WHERE player_id = ? ORDER BY record_id DESC LIMIT ?;",
   "describe": {
     "columns": [
       {
-        "name": "id",
+        "name": "record_id",
         "ordinal": 0,
         "type_info": "Integer"
       },
       {
-        "name": "roll_result",
+        "name": "player_id",
         "ordinal": 1,
         "type_info": "Integer"
       },
       {
-        "name": "created_at",
+        "name": "roll_result",
         "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 3,
         "type_info": "Datetime"
       }
     ],
@@ -25,8 +30,9 @@
     "nullable": [
       false,
       false,
+      false,
       true
     ]
   },
-  "hash": "33f56507e6b42e967c357512909cc0c49906484c5e4a001e88ec780b8b154dea"
+  "hash": "142db5bd37784f9bf527e68de20fc7feb389f6941e6cfc1d7e7d47d41838b448"
 }

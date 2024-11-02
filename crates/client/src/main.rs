@@ -6,7 +6,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 #[clap(author, version, about, long_about = "CLI to interact with the server")]
 struct Args {
     #[clap(short, long, default_value_t = 42)]
-    id: u64,
+    player_id: i64,
 
     #[clap(short, long, default_value = "127.0.0.1:3000")]
     server: String,
@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     let mut stream = TcpStream::connect(args.server).await?;
-    stream.write_all(format!("{}\n", args.id).as_bytes()).await?;
+    stream.write_all(format!("{}\n", args.player_id).as_bytes()).await?;
 
     let mut buf = [0; 1024];
     let n = stream.read(&mut buf).await?;

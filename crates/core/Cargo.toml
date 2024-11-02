@@ -7,3 +7,4 @@ edition = "2021"
 rand = { workspace = true }
 sqlx = { workspace = true }
 chrono = { workspace = true }
+tokio = { workspace = true }

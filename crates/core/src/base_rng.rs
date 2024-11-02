@@ -11,11 +11,11 @@ impl BaseRng {
         BaseRng { rng }
     }
 
-    pub fn generate(&mut self) -> u32 {
+    pub fn generate(&mut self) -> i64 {
         self.rng.gen_range(0..100)
     }
 
-    pub fn generate_range(&mut self, min: u32, max: u32) -> u32 {
+    pub fn generate_range(&mut self, min: i64, max: i64) -> i64 {
         self.rng.gen_range(min..max)
     }
 }

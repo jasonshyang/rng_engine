@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO rng (player_id, roll_result) VALUES (?, ?);",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "668cf4cd740f02e8a667c9190c7b85395d728bd75ab471ec37b20f8e540b76db"
+}

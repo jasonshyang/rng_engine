@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 tokio = { workspace = true }
 core = { workspace = true }
+dotenv = { workspace = true }

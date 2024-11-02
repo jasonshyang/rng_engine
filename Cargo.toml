@@ -9,6 +9,8 @@ core = { path = "crates/core" }
 server = { path = "crates/server" }
 client = { path = "crates/client" }
 
+dotenv = "0.15"
+
 rand = "0.8"
 tokio = { version = "1", features = ["full"] }
 clap = { version = "4.0", features = ["derive"]}
