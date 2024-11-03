@@ -12,8 +12,10 @@ client = { path = "crates/client" }
 dotenv = "0.15"
 
 rand = "0.8"
+config = "0.14"
+toml = "0.8"
+serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 clap = { version = "4.0", features = ["derive"]}
-
 sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio-native-tls", "macros", "chrono"] }
 chrono = { version = "0.4", features = ["serde"] }

@@ -1,29 +1,24 @@
-use std::{
-    env,
-    sync::Arc,
-};
-use tokio::{
-    net::TcpListener,
-    io::{AsyncReadExt, AsyncWriteExt},
-    sync::Mutex
-};
+use std::{env, sync::Arc};
+use tokio::{net::TcpListener, io::{AsyncReadExt, AsyncWriteExt}, sync::Mutex};
 use core::{
     db::Db,
-    rng_engine::RngEngine
+    rng_engine::RngEngine,
+    config::Config,
 };
 use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
-
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-    let db = Arc::new(Mutex::new(Db::new(&database_url).await?));
-    db.lock().await.init().await?;
-
-    let rng_engine = Arc::new(Mutex::new(RngEngine::new(42, db.clone()))); // Seed should be random in production
-
+    let config_path = env::var("CONFIG_PATH").expect("CONFIG_PATH must be set");
+    print!("Loading config from: {}\n", config_path);
+    let config = Config::from_file(&config_path)?;
+    print!("Config loaded: {:?}\n", config);
+    let db = Arc::new(Db::new(&database_url).await?);
+    db.init().await?;
+    print!("Connected to database\n");
+    let rng_engine = Arc::new(Mutex::new(RngEngine::new(42, db.clone(), config.calibration))); // Seed should be random in production
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 3000)); // Listen on localhost:3000, should be configurable
     let listener = TcpListener::bind(addr).await?;
 

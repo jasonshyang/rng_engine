@@ -48,7 +48,7 @@ impl Db {
         Ok(())
     }
 
-    pub async fn get_roll(&self, player_id: i64, limit: i32) -> Result<Option<Vec<RngRecordEntry>>> {
+    pub async fn get_rolls(&self, player_id: i64, limit: i32) -> Result<Option<Vec<RngRecordEntry>>> {
         let rows = sqlx::query!(
             "SELECT * FROM rng WHERE player_id = ? ORDER BY record_id DESC LIMIT ?;",
             player_id,

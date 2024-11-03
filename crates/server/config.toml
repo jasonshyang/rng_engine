@@ -1,0 +1,5 @@
+[calibration]
+target_mean = 50
+min = 0
+max = 100
+outlier_adj_factor = 0.3
